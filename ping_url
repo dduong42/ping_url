@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+import sys
+import time
+
+import requests
+
+if len(sys.argv) < 2:
+    print('Usage: ping_url URL', file=sys.stderr)
+    sys.exit(1)
+
+url = sys.argv[1]
+
+if not url.startswith('http:') and not url.startswith('https:'):
+    url = 'http://' + url
+
+count = 0
+pings = []
+while True:
+    try:
+        ping = requests.get(url).elapsed.total_seconds() * 1000
+        print('count={} time={:.3f} ms'.format(count, ping))
+        pings.append(ping)
+        count += 1
+        time.sleep(0.5)
+    except KeyboardInterrupt:
+        print('')
+        break
+print('--- {} statistics ---'.format(url))
+print('avg = {:.3f} ms'.format(sum(pings)/len(pings)))
